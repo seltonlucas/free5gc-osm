@@ -1,0 +1,267 @@
+apiVersion: v1
+entries:
+  free5gc-amf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.349283569-03:00"
+    description: A Helm chart to deploy the Free5GC AMF
+    digest: 12033f9dd3f90e8427f76bd383944d51dc7487ff25448d4a643a3a254cd674e2
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-amf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-amf-0.2.7.tgz
+    version: 0.2.7
+  free5gc-ausf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.349845297-03:00"
+    description: A Helm chart to deploy the Free5GC AUSF
+    digest: c7ca3282a0b43a6d62e59ec9857366eb0f0649826f290c5ae30a0b7f6f37e0ce
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-ausf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-ausf-0.2.7.tgz
+    version: 0.2.7
+  free5gc-chf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.35038209-03:00"
+    description: A Helm chart to deploy the free5GC CHF
+    digest: 8d473e53d1f498766ad347615b0f637760549f6976841840bbfea63de8bde7ed
+    maintainers:
+    - email: linyangzhe0508@gmail.com
+      name: YANG-ZHE, LIN
+    name: free5gc-chf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-chf-0.1.0.tgz
+    version: 0.1.0
+  free5gc-dbpython:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.350717629-03:00"
+    description: A Helm chart to deploy the free5GC dbpython
+    digest: 8497ca0352e383944eaa8057ff85f4f410b5d949622ded90be7b158c581675b8
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    name: free5gc-dbpython
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-dbpython-0.1.0.tgz
+    version: 0.1.0
+  free5gc-n3iwf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.35136029-03:00"
+    description: A Helm chart to deploy the Free5GC N3IWF
+    digest: ac6cd8e231fbda596ba4110081c06ae99385406a670e8d01648ebcecef46c9ab
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-n3iwf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-n3iwf-0.2.5.tgz
+    version: 0.2.5
+  free5gc-nef:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.351800484-03:00"
+    description: A Helm chart to deploy the free5GC CHF
+    digest: 4fbab6a0f72d7fde9b2d94cec0c2778356362f8ad8d57ee8f0d0c667553712e0
+    maintainers:
+    - email: linyangzhe0508@gmail.com
+      name: YANG-ZHE, LIN
+    name: free5gc-nef
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-nef-0.1.0.tgz
+    version: 0.1.0
+  free5gc-nrf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.359221928-03:00"
+    dependencies:
+    - condition: db.enabled
+      name: mongodb
+      repository: ""
+    description: A Helm chart to deploy the Free5GC NRF
+    digest: 17d9b6c8ccee9a8e7ca64e9133b666239db86f2596ebf6fd425bc6e0aaeb88bb
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-nrf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-nrf-0.2.7.tgz
+    version: 0.2.7
+  free5gc-nssf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.359885325-03:00"
+    description: A Helm chart to deploy the Free5GC NSSF
+    digest: ccfa38938cde7028240dc9fd249291e6a22c322e1cb47cc7bf316a06e29f97c5
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-nssf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-nssf-0.2.7.tgz
+    version: 0.2.7
+  free5gc-pcf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.360440978-03:00"
+    description: A Helm chart to deploy the Free5GC PCF
+    digest: 703a0c62651bc57c5fa02c33f36dd4d0a45d6107e55919ce3e512ac62d2367e4
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-pcf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-pcf-0.2.7.tgz
+    version: 0.2.7
+  free5gc-smf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.36132671-03:00"
+    description: A Helm chart to deploy the Free5GC SMF
+    digest: 1d1aefae943b728a2219ded95ac88eda29e5fb2711c3a7bde75420e6af79bd53
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-smf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-smf-0.2.7.tgz
+    version: 0.2.7
+  free5gc-udm:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.361866522-03:00"
+    description: A Helm chart to deploy the Free5GC UDM
+    digest: d59e24b8df058d5088df0980fc2f053d243fee744c3e0e4d7306145c80f29699
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-udm
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-udm-0.2.7.tgz
+    version: 0.2.7
+  free5gc-udr:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.369597967-03:00"
+    dependencies:
+    - condition: db.enabled
+      name: mongodb
+      repository: ""
+    description: A Helm chart to deploy the Free5GC UDR
+    digest: cbc8814bb63a2b3e7595dd33aa9d0b79bc6d76f5392211bfe96c8ac088054511
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-udr
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-udr-0.2.7.tgz
+    version: 0.2.7
+  free5gc-upf:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.370830619-03:00"
+    description: A Helm chart to deploy the Free5GC User Plane
+    digest: 46727eb3de17e877a956695eaae539c26b46c420514f6e149dd56c70ecaf46f0
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-upf
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-upf-0.2.6.tgz
+    version: 0.2.6
+  free5gc-webui:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-03-18T22:20:17.378818901-03:00"
+    dependencies:
+    - condition: db.enabled
+      name: mongodb
+      repository: ""
+    description: A Helm chart to deploy the Free5GC WEBUI
+    digest: 626a6ac738c43a9f19223ac82290ce579c9af4d4cc7c6e097af1b5f36d2e0fc1
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc-webui
+    type: application
+    urls:
+    - https://github.com/seltonlucas/free5gc-osm.git/free5gc-webui-0.1.5.tgz
+    version: 0.1.5
+generated: "2025-03-18T22:20:17.348116809-03:00"
