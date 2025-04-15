@@ -10,7 +10,7 @@ vnfd:
     nets:
       - id: mgmtnet
   kdu:
-    - name: free5gc-upf
+    - name: free5gc_upf
       helm-chart: free5gc/upf
   mgmt-cp: mgmt-ext
   product-name: free5gc_upf_knf

@@ -1,22 +1,22 @@
 nsd:
   nsd:
-    - description: NS consisting of a single KNF auxiliary5gc_knf connected to mgmt network
+    - description: NS consisting of a single KNF ueransim_free5gc_knf connected to mgmt network
       designer: OSM
       df:
         - id: default-df
           vnf-profile:
-            - id: auxiliary5gc
+            - id: ueransim_free5gc
               virtual-link-connectivity:
                 - constituent-cpd-id:
-                    - constituent-base-element-id: auxiliary5gc
+                    - constituent-base-element-id: ueransim_free5gc
                       constituent-cpd-id: mgmt-ext
                   virtual-link-profile-id: mgmtnet
-              vnfd-id: auxiliary5gc_knf
-      id: auxiliary5gc_ns
-      name: auxiliary5gc_ns
+              vnfd-id: ueransim_free5gc_knf
+      id: ueransim_free5gc_ns
+      name: ueransim_free5gc_ns
       version: 1.0
       virtual-link-desc:
         - id: mgmtnet
           mgmt-network: true
       vnfd-id:
-        - auxiliary5gc_knf
+        - ueransim_free5gc_knf
