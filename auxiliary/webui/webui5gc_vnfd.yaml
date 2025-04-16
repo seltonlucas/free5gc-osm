@@ -1,0 +1,18 @@
+vnfd:
+  description: KNF with multiple KDU using free5gc helm-charts
+  df:
+    - id: default-df
+  ext-cpd:
+    - id: mgmt-ext
+      k8s-cluster-net: mgmtnet
+  id: webui_free5gc_knf
+  k8s-cluster:
+    nets:
+      - id: mgmtnet
+  kdu:
+    - name: free5gc-webui
+      helm-chart: free5gc/free5gc-webui
+  mgmt-cp: mgmt-ext
+  product-name: webui_free5gc_knf
+  provider: LaTARC
+  version: 1.0

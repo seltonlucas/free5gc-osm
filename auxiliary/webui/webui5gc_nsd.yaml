@@ -1,0 +1,22 @@
+nsd:
+  nsd:
+    - description: NS consisting of a single KNF webui_free5gc_knf connected to mgmt network
+      designer: OSM
+      df:
+        - id: default-df
+          vnf-profile:
+            - id: webui_free5gc
+              virtual-link-connectivity:
+                - constituent-cpd-id:
+                    - constituent-base-element-id: webui_free5gc
+                      constituent-cpd-id: mgmt-ext
+                  virtual-link-profile-id: mgmtnet
+              vnfd-id: webui_free5gc_knf
+      id: webui_free5gc_ns
+      name: webui_free5gc_ns
+      version: 1.0
+      virtual-link-desc:
+        - id: mgmtnet
+          mgmt-network: true
+      vnfd-id:
+        - webui_free5gc_knf

@@ -1,0 +1,22 @@
+nsd:
+  nsd:
+    - description: NS consisting of a single KNF free5gc_smf_knf connected to mgmt network
+      designer: OSM
+      df:
+        - id: default-df
+          vnf-profile:
+            - id: free5gc_smf
+              virtual-link-connectivity:
+                - constituent-cpd-id:
+                    - constituent-base-element-id: free5gc_smf
+                      constituent-cpd-id: mgmt-ext
+                  virtual-link-profile-id: mgmtnet
+              vnfd-id: free5gc_smf_knf
+      id: free5gc_smf_ns
+      name: free5gc_smf_ns
+      version: 1.0
+      virtual-link-desc:
+        - id: mgmtnet
+          mgmt-network: true
+      vnfd-id:
+        - free5gc_smf_knf
