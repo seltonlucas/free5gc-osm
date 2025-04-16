@@ -1,9 +1,73 @@
 apiVersion: v1
 entries:
+  free5gc:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2025-04-16T15:15:05.75714734-03:00"
+    dependencies:
+    - condition: deployMongoDb
+      name: mongodb
+      repository: ""
+    - condition: deployAmf
+      name: free5gc-amf
+      repository: ""
+    - condition: deployAusf
+      name: free5gc-ausf
+      repository: ""
+    - condition: deployChf
+      name: free5gc-chf
+      repository: ""
+    - condition: deployN3iwf
+      name: free5gc-n3iwf
+      repository: ""
+    - condition: deployNef
+      name: free5gc-nef
+      repository: ""
+    - condition: deployNrf
+      name: free5gc-nrf
+      repository: ""
+    - condition: deployNssf
+      name: free5gc-nssf
+      repository: ""
+    - condition: deployPcf
+      name: free5gc-pcf
+      repository: ""
+    - condition: deploySmf
+      name: free5gc-smf
+      repository: ""
+    - condition: deployUdm
+      name: free5gc-udm
+      repository: ""
+    - condition: deployUdr
+      name: free5gc-udr
+      repository: ""
+    - condition: deployUpf
+      name: free5gc-upf
+      repository: ""
+    - condition: deployWebui
+      name: free5gc-webui
+      repository: ""
+    - condition: deployDbPython
+      name: free5gc-dbpython
+      repository: ""
+    description: A Helm chart to deploy Free5gc
+    digest: 792603fcbde56150b118d1ae634ce43808d0cb3b487da72c6d78155ece55f537
+    icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
+    maintainers:
+    - email: abderaouf.khichane@orange.com
+      name: Abderaouf KHICHANE
+    - email: ilhem.fajjari@orange.com
+      name: Ilhem FAJJARI
+    - email: ayoub.bousselmi@orange.com
+      name: Ayoub BOUSSELMI
+    name: free5gc
+    urls:
+    - https://seltonlucas.github.io/free5gc-osm/packages/free5gc-1.1.7.tgz
+    version: 1.1.7
   free5gc-amf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.531890143-03:00"
+    created: "2025-04-16T15:15:05.711346184-03:00"
     description: A Helm chart to deploy the Free5GC AMF
     digest: 12033f9dd3f90e8427f76bd383944d51dc7487ff25448d4a643a3a254cd674e2
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -22,7 +86,7 @@ entries:
   free5gc-ausf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.532539087-03:00"
+    created: "2025-04-16T15:15:05.712321961-03:00"
     description: A Helm chart to deploy the Free5GC AUSF
     digest: c7ca3282a0b43a6d62e59ec9857366eb0f0649826f290c5ae30a0b7f6f37e0ce
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -41,7 +105,7 @@ entries:
   free5gc-chf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.533068335-03:00"
+    created: "2025-04-16T15:15:05.712848537-03:00"
     description: A Helm chart to deploy the free5GC CHF
     digest: 8d473e53d1f498766ad347615b0f637760549f6976841840bbfea63de8bde7ed
     maintainers:
@@ -55,7 +119,7 @@ entries:
   free5gc-dbpython:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.533432454-03:00"
+    created: "2025-04-16T15:15:05.713189859-03:00"
     description: A Helm chart to deploy the free5GC dbpython
     digest: 8497ca0352e383944eaa8057ff85f4f410b5d949622ded90be7b158c581675b8
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -70,7 +134,7 @@ entries:
   free5gc-n3iwf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.534225393-03:00"
+    created: "2025-04-16T15:15:05.757834024-03:00"
     description: A Helm chart to deploy the Free5GC N3IWF
     digest: ac6cd8e231fbda596ba4110081c06ae99385406a670e8d01648ebcecef46c9ab
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -89,7 +153,7 @@ entries:
   free5gc-nef:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.534986192-03:00"
+    created: "2025-04-16T15:15:05.758309071-03:00"
     description: A Helm chart to deploy the free5GC CHF
     digest: 4fbab6a0f72d7fde9b2d94cec0c2778356362f8ad8d57ee8f0d0c667553712e0
     maintainers:
@@ -103,7 +167,7 @@ entries:
   free5gc-nrf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.544401957-03:00"
+    created: "2025-04-16T15:15:05.766011665-03:00"
     dependencies:
     - condition: db.enabled
       name: mongodb
@@ -126,7 +190,7 @@ entries:
   free5gc-nssf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.545117522-03:00"
+    created: "2025-04-16T15:15:05.766726117-03:00"
     description: A Helm chart to deploy the Free5GC NSSF
     digest: ccfa38938cde7028240dc9fd249291e6a22c322e1cb47cc7bf316a06e29f97c5
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -145,7 +209,7 @@ entries:
   free5gc-pcf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.545715481-03:00"
+    created: "2025-04-16T15:15:05.767352651-03:00"
     description: A Helm chart to deploy the Free5GC PCF
     digest: 703a0c62651bc57c5fa02c33f36dd4d0a45d6107e55919ce3e512ac62d2367e4
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -164,7 +228,7 @@ entries:
   free5gc-smf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.548320712-03:00"
+    created: "2025-04-16T15:15:05.768189294-03:00"
     description: A Helm chart to deploy the Free5GC SMF
     digest: 1d1aefae943b728a2219ded95ac88eda29e5fb2711c3a7bde75420e6af79bd53
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -183,7 +247,7 @@ entries:
   free5gc-udm:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.549444187-03:00"
+    created: "2025-04-16T15:15:05.768841247-03:00"
     description: A Helm chart to deploy the Free5GC UDM
     digest: d59e24b8df058d5088df0980fc2f053d243fee744c3e0e4d7306145c80f29699
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -202,7 +266,7 @@ entries:
   free5gc-udr:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.561916999-03:00"
+    created: "2025-04-16T15:15:05.777939207-03:00"
     dependencies:
     - condition: db.enabled
       name: mongodb
@@ -225,7 +289,7 @@ entries:
   free5gc-upf:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.566300942-03:00"
+    created: "2025-04-16T15:15:05.780317-03:00"
     description: A Helm chart to deploy the Free5GC User Plane
     digest: 46727eb3de17e877a956695eaae539c26b46c420514f6e149dd56c70ecaf46f0
     icon: https://camo.githubusercontent.com/915dcf8299b3d2bfe2b2693c5401916cb31e31fb690a73e7da327808000efa37/68747470733a2f2f666f72756d2e667265653567632e6f72672f75706c6f6164732f64656661756c742f6f726967696e616c2f31582f333234363935626663363438316264353536633131303138663238333430383663663565633634352e706e67
@@ -244,7 +308,7 @@ entries:
   free5gc-webui:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.58546952-03:00"
+    created: "2025-04-16T15:15:05.787906846-03:00"
     dependencies:
     - condition: db.enabled
       name: mongodb
@@ -267,7 +331,7 @@ entries:
   ueransim:
   - apiVersion: v2
     appVersion: latest
-    created: "2025-04-16T09:48:03.56295068-03:00"
+    created: "2025-04-16T15:15:05.778876111-03:00"
     description: A Helm chart to deploy UERANSIM
     digest: 8c21e374727c2ed7466b30e293c3155c52fca17ef5297c07e9c87771af96141a
     icon: https://raw.githubusercontent.com/aligungr/UERANSIM/master/.github/logo.png
@@ -278,4 +342,4 @@ entries:
     urls:
     - https://seltonlucas.github.io/free5gc-osm/packages/ueransim-2.0.17.tgz
     version: 2.0.17
-generated: "2025-04-16T09:48:03.530794354-03:00"
+generated: "2025-04-16T15:15:05.709751057-03:00"
