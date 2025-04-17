@@ -5,14 +5,14 @@ vnfd:
   ext-cpd:
     - id: mgmt-ext
       k8s-cluster-net: mgmtnet
-  id: free5gc_ueransim_knf
+  id: free5gc_knf
   k8s-cluster:
     nets:
       - id: mgmtnet
   kdu:
-    - name: free5gc_ueransim
-      helm-chart: free5gc/ueransim
+    - name: free5gc
+      helm-chart: free5gc/free5gc-amf
   mgmt-cp: mgmt-ext
-  product-name: free5gc_ueransim_knf
+  product-name: free5gc_knf
   provider: LaTARC
   version: 1.0
