@@ -11,7 +11,7 @@ vnfd:
       - id: mgmtnet
   kdu:
     - name: free5gc
-      helm-chart: free5gc/free5gc-amf
+      helm-chart: free5gc/free5gc
   mgmt-cp: mgmt-ext
   product-name: free5gc_knf
   provider: LaTARC
