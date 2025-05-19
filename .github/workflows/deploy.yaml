@@ -1,0 +1,22 @@
+name: Deploy functions
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [ondemand]
+jobs:
+  ondemand-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy functions
+        uses: appleboy/ssh-action@v1.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script_stop: true
+          proxy_host: ${{ secrets.PROXY_HOST }}
+          proxy_username: ${{ secrets.PROXY_USERNAME }}
+          proxy_key: ${{ secrets.SSH_PROXY_KEY }}
+          proxy_port: ${{ secrets.PROXY_PORT }}
+          script: |
+            ${{ secrets.EXEC_SCRIPT }} ${{ github.event.client_payload.args }}
