@@ -9,7 +9,7 @@ additionalParamsForVnf:
           global:
             projectName: free5gc
             userPlaneArchitecture: single  # possible values are "single" and "ulcl"
-            uesubnet: 10.7.230.0/24
+            uesubnet: 10.1.0.0/16
             n4network:
               enabled: true
               name: n4network
@@ -35,8 +35,8 @@ additionalParamsForVnf:
               masterIf: ens3
               subnetIP: 10.7.230.0
               cidr: 24
-              gatewayIP: 10.7.230.1
-              excludeIP: 10.7.230.254
+              gatewayIP: 10.7.230.100
+              excludeIP: 10.7.230.100
             n9network:
               enabled: true
               name: n9network
@@ -67,7 +67,7 @@ additionalParamsForVnf:
             n4if:  # PFCP
               ipAddress: 10.100.50.241
             n6if:  # DN
-              ipAddress: 10.7.230.203
+              ipAddress: 10.7.230.202
 
             podAnnotations: {}
               # additional annotations
@@ -114,5 +114,3 @@ additionalParamsForVnf:
                 enable: true # true or false
                 level: info # how detailed to output, value: trace, debug, info, warn, error, fatal, panic
                 reportCaller: false # enable the caller report or not, value: true or false
-
-          # The followed values will be considered in the case of choosing "ulcl" architecture for the user plane
