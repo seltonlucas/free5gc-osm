@@ -19,4 +19,5 @@ jobs:
           proxy_key: ${{ secrets.SSH_PROXY_KEY }}
           proxy_port: ${{ secrets.PROXY_PORT }}
           script: |
-            export OSM_HOSTNAME=nbi.10.7.230.201.nip.io && osm k8scluster-list
+            export OSM_HOSTNAME=nbi.10.7.230.201.nip.io 
+            osm k8scluster-list
