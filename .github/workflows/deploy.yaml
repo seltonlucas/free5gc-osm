@@ -19,4 +19,4 @@ jobs:
           proxy_key: ${{ secrets.SSH_PROXY_KEY }}
           proxy_port: ${{ secrets.PROXY_PORT }}
           script: |
-            ${{ secrets.EXEC_SCRIPT }} ${{ github.event.client_payload.args }}
+            osm k8scluster-list
