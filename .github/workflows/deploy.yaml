@@ -1,8 +1,11 @@
 name: Deploy functions
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [ondemand]
+    inputs:
+      cluster_ip:
+        required: true
+        type: string
+
 jobs:
   ondemand-test:
     runs-on: ubuntu-latest
@@ -22,3 +25,4 @@ jobs:
             export OSM_HOSTNAME=nbi.10.7.230.201.nip.io 
             echo "${{ secrets.config }}" | base64 -d > config5gc.yaml
             osm ns-create --ns_name free5gc --nsd_name free5gc_ns --vim_account dummy --config_file config5gc.yaml
+            echo "${{ inputs.cluster_ip }}"
