@@ -67,6 +67,7 @@ jobs:
           osm k8scluster-add --creds ~/kubeconfig.yaml \
            --version '1.26' \
            --vim dummy \
+           --wait \
            --description "My K8s cluster" \
            --k8s-nets '{"net1": "osm-ext"}' \
            microk8s-cluster
@@ -77,5 +78,5 @@ jobs:
           ssh -o PreferredAuthentications=publickey osm bash << EOF
           export OSM_HOSTNAME=nbi.10.7.230.201.nip.io 
           echo "${{ secrets.config }}" | base64 -d > config5gc.yaml
-          osm ns-create --ns_name free5gc --nsd_name free5gc_ns --vim_account dummy --config_file config5gc.yaml
+          osm ns-create --wait --ns_name free5gc --nsd_name free5gc_ns --vim_account dummy --config_file config5gc.yaml
           EOF
