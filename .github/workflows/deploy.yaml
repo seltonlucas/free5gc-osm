@@ -15,10 +15,8 @@ jobs:
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/proxy.key
           chmod 600 ~/.ssh/proxy.key
-          echo "$QEMU_KEY" > ~/.ssh/qemu.key
-          chmod 600 ~/.ssh/qemu.key
-          echo "$GIT_KEY" > ~/.ssh/git.key
-          chmod 600 ~/.ssh/git.key
+          echo "$OSM_KEY" > ~/.ssh/osm.key
+          chmod 600 ~/.ssh/osm.key
           cat >>~/.ssh/config <<END
           Host proxy
             HostName $SSH_HOST
@@ -28,28 +26,40 @@ jobs:
             Port $SSH_PORT
           Host osm
             HostName $OSM_HOST
-            IdentityFile ~/.ssh/qemu.key
+            IdentityFile ~/.ssh/osm.key
             StrictHostKeyChecking no
             ProxyJump proxy
           Host cluster
             HostName $CLUSTER_HOST
+            User ubuntu
             StrictHostKeyChecking no
             ProxyJump proxy
           END
+        env:
+          SSH_USER: ${{ secrets.PROXY_USERNAME }}
+          SSH_KEY: ${{ secrets.SSH_PROXY_KEY }}
+          SSH_HOST: ${{ secrets.PROXY_HOST }}
+          SSH_PORT: ${{ secrets.PROXY_PORT }}
+          OSM_USER: ${{ secrets.USERNAME }}
+          OSM_HOST: ${{ secrets.HOST }}
+          OSM_KEY: ${{ secrets.KEY }}
+          OSM_PORT: ${{ secrets.HOST }}
+          CLUSTER_HOST: ${{ inputs.cluster_ip }}
 
       - name: Install sshpass
         run: |
           #sudo apt-get update
           sudo apt-get install -y sshpass
-            
+
       - name: Retrieve kubeconfig
         run: |
-          sshpass -p "${{ secrets.BASTION_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
-            -J ${{ secrets.BASTION_USER }}@${{ secrets.BASTION_HOST }} \
-            ${{ secrets.SSH_USER }}@${{ inputs.cluster_ip }} \
+          sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
+            ubuntu@${{ inputs.cluster_ip }} \
             'sudo microk8s config' > ~/.kube/config
-      
+
           sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/.kube/config
+
+          cat ~/.kube/config
             
             #echo "${{ secrets.config }}" | base64 -d > config5gc.yaml
             #osm ns-create --ns_name free5gc --nsd_name free5gc_ns --vim_account dummy --config_file config5gc.yaml
