@@ -54,9 +54,8 @@ jobs:
       - name: Retrieve kubeconfig
         run: |
           sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
-            ubuntu@${{ inputs.cluster_ip }} \
-            'sudo microk8s config' > ~/.kube/config
-
+          ssh cluster \
+          'sudo microk8s config' > ~/.kube/config
           sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/.kube/config
 
           cat ~/.kube/config
