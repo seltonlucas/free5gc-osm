@@ -58,6 +58,7 @@ jobs:
           'sudo microk8s config' > ~/kubeconfig
           sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/kubeconfig
 
+          chmod +x ~/kubeconfig
           cat ~/kubeconfig
             
             #echo "${{ secrets.config }}" | base64 -d > config5gc.yaml
