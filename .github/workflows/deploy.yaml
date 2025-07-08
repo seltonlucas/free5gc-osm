@@ -56,19 +56,19 @@ jobs:
           sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
           ssh cluster \
           'sudo microk8s config' > ~/kubeconfig
-          chmod +x kubeconfig
-          sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/kubeconfig
+          #chmod +x kubeconfig
+          #sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/kubeconfig
 
             #echo "${{ secrets.config }}" | base64 -d > config5gc.yaml
             #osm ns-create --ns_name free5gc --nsd_name free5gc_ns --vim_account dummy --config_file config5gc.yaml
             #echo "${{ inputs.cluster_ip }}"
 
-      - name: Register cluster
-        run: |
-          ssh osm \ export OSM_HOSTNAME=nbi.10.7.230.201.nip.io && \
-          osm k8scluster-add --creds ~/kubeconfig.yaml \
-                   --version '1.26' \
-                   --vim dummy \
-                   --description "My K8s cluster" \
-                   --k8s-nets '{"net1": "osm-ext"}' \
-                   microk8s-cluster
+      # - name: Register cluster
+      # run: |
+      # ssh osm \ export OSM_HOSTNAME=nbi.10.7.230.201.nip.io && \
+      # osm k8scluster-add --creds ~/kubeconfig.yaml \
+      #  --version '1.26' \
+      #  --vim dummy \
+      #  --description "My K8s cluster" \
+      #  --k8s-nets '{"net1": "osm-ext"}' \
+      #  microk8s-cluster
