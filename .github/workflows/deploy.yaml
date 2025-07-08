@@ -56,6 +56,7 @@ jobs:
           sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
           ssh cluster \
           'sudo microk8s config' > ~/kubeconfig
+          chmod +x kubeconfig
           sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/kubeconfig
 
             #echo "${{ secrets.config }}" | base64 -d > config5gc.yaml
