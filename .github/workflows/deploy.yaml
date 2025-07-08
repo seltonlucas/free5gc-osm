@@ -26,6 +26,7 @@ jobs:
             Port $SSH_PORT
           Host osm
             HostName $OSM_HOST
+            User $OSM_USER
             IdentityFile ~/.ssh/osm.key
             StrictHostKeyChecking no
             ProxyJump proxy
