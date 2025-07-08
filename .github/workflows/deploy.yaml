@@ -10,6 +10,33 @@ jobs:
   ondemand-test:
     runs-on: ubuntu-latest
     steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/proxy.key
+          chmod 600 ~/.ssh/proxy.key
+          echo "$QEMU_KEY" > ~/.ssh/qemu.key
+          chmod 600 ~/.ssh/qemu.key
+          echo "$GIT_KEY" > ~/.ssh/git.key
+          chmod 600 ~/.ssh/git.key
+          cat >>~/.ssh/config <<END
+          Host proxy
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/proxy.key
+            StrictHostKeyChecking no
+            Port $SSH_PORT
+          Host osm
+            HostName $OSM_HOST
+            IdentityFile ~/.ssh/qemu.key
+            StrictHostKeyChecking no
+            ProxyJump proxy
+          Host cluster
+            HostName $CLUSTER_HOST
+            StrictHostKeyChecking no
+            ProxyJump proxy
+          END
+
       - name: Deploy functions
         uses: appleboy/ssh-action@v1.1.0
         with:
