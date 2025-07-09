@@ -71,6 +71,7 @@ jobs:
            --k8s-nets '{"net1": "osm-ext"}' \
            microk8s-cluster
           EOF
+          sleep 60 #wait cluster to be ready
 
       - name: Deploy free5gc
         run: |
