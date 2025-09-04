@@ -5,6 +5,9 @@ on:
       cluster_ip:
         required: true
         type: string
+      cluster_name:
+        required: true
+        type: string
 
 jobs:
   ondemand-test:
@@ -69,9 +72,11 @@ jobs:
            --vim dummy \
            --description "My K8s cluster" \
            --k8s-nets '{"net1": "osm-ext"}' \
-           microk8s-cluster
+           $CLUSTER_NAME
           EOF
           sleep 60 #wait cluster to be ready
+        env:
+          CLUSTER_NAME: ${{ inputs.cluster_name }}
 
       - name: Deploy free5gc
         run: |
