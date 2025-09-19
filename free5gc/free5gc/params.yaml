@@ -96,11 +96,8 @@ additionalParamsForVnf:
           deployDbPython: true
           
           mongodb:
-            image:
-              registry: docker.io
-              repository: bitnamilegacy/mongodb
-              tag: 7.0.9-debian-12-r4
-              pullPolicy: IfNotPresent
+            image: bitnamilegacy/mongodb:7.0.9-debian-12-r4
+            imagepullPolicy: IfNotPresent
           
           free5gc-smf:
             smf:
