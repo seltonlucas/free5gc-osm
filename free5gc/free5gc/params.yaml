@@ -250,6 +250,6 @@ additionalParamsForVnf:
               mountPath: /bitnami/mongodb/data/db/
             service:
               name: mongodb
-              type: ClusterIP
+              type: NodePort
               port: 27017
               nodePort: 30017
