@@ -8,6 +8,9 @@ on:
       cluster_name:
         required: true
         type: string
+      config_base64:
+        required: true
+        type: string
 
 jobs:
   ondemand-test:
@@ -97,13 +100,9 @@ jobs:
         env:
           CLUSTER_NAME: ${{ inputs.cluster_name }}
 
-      - name: Download config artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: config5gc
-          path: ./
-          
-      # ... other steps ...
+      - name: Write config from base64 input
+        run: |
+          echo "${{ inputs.config_base64 }}" | base64 -d > config5gc.yaml
 
       - name: Deploy free5gc
         run: |
