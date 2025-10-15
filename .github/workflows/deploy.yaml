@@ -16,14 +16,6 @@ jobs:
   ondemand-test:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Upload config artifact
-        uses: actions/upload-artifact@v4
-        with:
-          path: config5gc.yaml
-          overwrite: true
-          if-no-files-found: error
-      
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
