@@ -13,6 +13,14 @@ jobs:
   ondemand-test:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Upload config artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: config5gc.yaml
+          overwrite: true
+          if-no-files-found: error
+      
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
@@ -89,10 +97,17 @@ jobs:
         env:
           CLUSTER_NAME: ${{ inputs.cluster_name }}
 
+      - name: Download config artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: config5gc
+          path: ./
+          
+      # ... other steps ...
+
       - name: Deploy free5gc
         run: |
           ssh -o PreferredAuthentications=publickey osm bash << EOF
           export OSM_HOSTNAME=nbi.10.7.230.201.nip.io 
-          echo "${{ secrets.config }}" | base64 -d > config5gc.yaml
           osm ns-create --wait --ns_name free5gc --nsd_name free5gc_ns --vim_account dummy --config_file config5gc.yaml
           EOF
