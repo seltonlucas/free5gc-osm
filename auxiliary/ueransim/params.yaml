@@ -93,22 +93,24 @@ additionalParamsForVnf:
           ue:
             enabled: true
             name: ue
-            replicaCount: 1
+            replicaCount: 10
             image:
-              name: free5gc/ueransim
-              tag: v4.0.0
+              name: seltonlucas/ueransim
+              tag: latest
               pullPolicy: IfNotPresent
             configmap:
               name: ue-configmap
             volume:
               name: ue-volume
               mount: /ueransim/config
-            command: "./nr-ue -c ./config/ue-config.yaml"  # This is the command that will be launched in the UE container
+            command: "./nr-ue -c $CONFIG_DIR/ue-config.yaml &"  # This is the command that will be launched in the UE container
             # A script that will be run after the UE creation. It may be used to periodically generate traffic
-            script: ""
-            # script: |-
-            #   ping .....
-
+            #script: ""
+            script: |-
+              sleep 60
+              IMSI=$(awk -F'"' '/supi:/ {print $2}' /tmp/ueransim-config/ue-config.yaml)
+              curl --interface uesimtun0 "http://10.7.230.201:5000/?imsi=$IMSI"
+              
             podAnnotations: {}
               # additional annotations
             imagePullSecrets: []
