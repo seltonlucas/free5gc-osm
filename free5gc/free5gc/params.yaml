@@ -252,3 +252,5 @@ additionalParamsForVnf:
               name: mongodb
               type: NodePort
               port: 27017
+              nodePorts:
+                mongodb: "30017"
