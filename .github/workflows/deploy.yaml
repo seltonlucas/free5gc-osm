@@ -156,7 +156,7 @@ jobs:
           
           K8S_RESPONSE=$(ssh osm "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
           -H 'Authorization: Bearer ${OSM_TOKEN}' \
-          -H 'Content-Type: application/json' \
+          -H 'Content-Type: application/yaml' \
           -H 'Accept: application/json' \
           --data @~/k8s_payload.yaml" 2>/dev/null)
 
