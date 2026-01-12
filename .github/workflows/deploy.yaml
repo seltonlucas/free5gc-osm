@@ -144,26 +144,34 @@ jobs:
               "nets": {"net1": "osm-ext"},
               "credentials": kubeconfig
           }
-          
-          # Salvar
           with open('/tmp/k8s_payload.json', 'w') as f:
-              json.dump(payload, f)
-          PYTHON_EOF
-
-          # Transferir payload para OSM host
-          scp /tmp/k8s_payload.json osm:~/k8s_payload.json
+          json.dump(payload, f, indent=2)
           
-          # Registrar cluster
-          K8S_CLUSTER_ID=$(ssh -o PreferredAuthentications=publickey osm \
-            "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
-              -H 'Authorization: Bearer ${OSM_TOKEN}' \
-              -H 'Content-Type: application/json' \
-              -H 'Accept: application/json' \
-              --data @~/k8s_payload.json | jq -r '.id'")
+          print("✅ Payload created")
+          PYTHON_EOF
+          
+          # Ver preview do payload
+          echo "=== K8s Payload Preview ==="
+          head -30 /tmp/k8s_payload.json
+          
+          # Transferir payload para OSM host
+          scp /tmp/k8s_payload.json osm:~/k8s_payload.json 2>/dev/null
+          
+          K8S_RESPONSE=$(ssh osm "curl -sk -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
+          -H 'Authorization: Bearer ${OSM_TOKEN}' \
+          -H 'Content-Type: application/json' \
+          -H 'Accept: application/json' \
+          --data @~/k8s_payload.json" 2>/dev/null)
+
+          echo "=== API Response ==="
+          echo "$K8S_RESPONSE"
+          
+          K8S_CLUSTER_ID=$(echo "$K8S_RESPONSE" | jq -r '.id' 2>/dev/null)
           
           if [ -z "$K8S_CLUSTER_ID" ] || [ "$K8S_CLUSTER_ID" = "null" ]; then
             echo "❌ Failed to register K8s cluster"
-            echo "$K8S_RESPONSE"
+            echo "=== Full Response ==="
+            echo "$K8S_RESPONSE" | jq . 2>/dev/null || echo "$K8S_RESPONSE"
             exit 1
           fi
           
