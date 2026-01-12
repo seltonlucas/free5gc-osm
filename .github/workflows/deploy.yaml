@@ -128,40 +128,37 @@ jobs:
         run: |
           python3 << 'PYTHON_EOF'
           import yaml
-          import json
           import os
 
-          # Carregar kubeconfig
+          # Ler e parsear kubeconfig como objeto
           with open(os.path.expanduser('~/kubeconfig'), 'r') as f:
               kubeconfig = yaml.safe_load(f)
           
           # Criar payload
           payload = {
-              "name": os.environ['CLUSTER_NAME'],
-              "k8s_version": "1.26",
-              "vim_account": os.environ['VIM_ID'],
-              "description": "My K8s cluster",
-              "nets": {"net1": "osm-ext"},
+              'name': os.environ['CLUSTER_NAME'],
+              'k8s_version': '1.26',
+              'vim_account': os.environ['VIM_ID'],
+              'description': 'My K8s cluster',
+              'nets': {
+                  'net1': 'osm-ext'
+              },
               "credentials": kubeconfig
           }
-          with open('/tmp/k8s_payload.json', 'w') as f:
-              json.dump(payload, f, indent=2)
+          with open('/tmp/k8s_payload.yaml', 'w') as f:
+              yaml.dump(payload, f, default_flow_style=False, sort_keys=False)
           
           print("✅ Payload created")
           PYTHON_EOF
           
-          # Ver preview do payload
-          echo "=== K8s Payload Preview ==="
-          head -30 /tmp/k8s_payload.json
-          
           # Transferir payload para OSM host
-          scp /tmp/k8s_payload.json osm:~/k8s_payload.json 2>/dev/null
+          scp /tmp/k8s_payload.yaml osm:~/k8s_payload.yaml 2>/dev/null
           
-          K8S_RESPONSE=$(ssh osm "curl -sk -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
+          K8S_RESPONSE=$(ssh osm "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
           -H 'Authorization: Bearer ${OSM_TOKEN}' \
           -H 'Content-Type: application/json' \
           -H 'Accept: application/json' \
-          --data @~/k8s_payload.json" 2>/dev/null)
+          --data @~/k8s_payload.yaml" 2>/dev/null)
 
           echo "=== API Response ==="
           echo "$K8S_RESPONSE"
