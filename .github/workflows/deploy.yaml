@@ -145,7 +145,7 @@ jobs:
               "credentials": kubeconfig
           }
           with open('/tmp/k8s_payload.json', 'w') as f:
-          json.dump(payload, f, indent=2)
+              json.dump(payload, f, indent=2)
           
           print("✅ Payload created")
           PYTHON_EOF
