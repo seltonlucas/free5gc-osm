@@ -60,8 +60,7 @@ jobs:
 
       - name: Retrieve OSM token
         run: |
-          TOKEN=$(ssh -o PreferredAuthentications=publickey osm \
-            "curl -sk -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
+          TOKEN=$(ssh osm "curl -sk -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
               -H 'Content-Type: application/json' \
               -d '{
                 \"username\": \"${OSM_USER}\",
