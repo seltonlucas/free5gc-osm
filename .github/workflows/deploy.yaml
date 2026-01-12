@@ -64,7 +64,7 @@ jobs:
             -H 'Content-Type: application/json' \
             -d '{
               "username": "${OSM_USER}",
-              \password": "${OSM_PASSWORD}",
+              "password": "${OSM_PASSWORD}",
               "project_id": "${OSM_PROJECT}"
             }' | jq -r '.id'" 2>/dev/null)
           
