@@ -63,9 +63,9 @@ jobs:
           TOKEN=$(ssh osm "curl -sk -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
             -H 'Content-Type: application/json' \
             -d '{
-              \"username\": \"${OSM_USER}\",
-              \"password\": \"${OSM_PASSWORD}\",
-              \"project_id\": \"${OSM_PROJECT}\"
+              "username": "${OSM_USER}",
+              \password": "${OSM_PASSWORD}",
+              "project_id": "${OSM_PROJECT}"
             }' | jq -r '.id'" 2>/dev/null)
           
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
