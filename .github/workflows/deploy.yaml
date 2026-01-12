@@ -60,15 +60,17 @@ jobs:
 
       - name: Retrieve OSM token
         run: |
-          TOKEN=$(ssh osm "curl -sk -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
+          TOKEN=$(ssh -o PreferredAuthentications=publickey osm \
+          "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
             -H 'Content-Type: application/json' \
             -H 'Accept: application/json' \
             -d '{
-              "username": "${OSM_USER}",
-              "password": "${OSM_PASSWORD}",
-              "project_id": "${OSM_PROJECT}"
-            }' | jq -r '.id'")
-          
+              \"username\": \"${OSM_USER}\",
+              \"password\": \"${OSM_PASSWORD}\",
+              \"project_id\": \"${OSM_PROJECT}\"
+            }'| jq -r '.id'")
+            
+         
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
             echo "❌ Failed to retrieve OSM token"
             exit 1
