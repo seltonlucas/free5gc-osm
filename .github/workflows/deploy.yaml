@@ -173,7 +173,7 @@ jobs:
           sleep 60
         env:
           CLUSTER_NAME: ${{ inputs.cluster_name }}
-          OSM_HOSTNAME: nbi.10.7.230.201.nip.io
+          OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
           VIM_ID: ${{ env.VIM_ID }}
 
@@ -229,7 +229,7 @@ jobs:
           echo "NS_INSTANCE_ID=${NS_INSTANCE_ID}" >> $GITHUB_ENV
           echo "✅ NS deployed successfully with ID: ${NS_INSTANCE_ID}"
         env:
-          OSM_HOSTNAME: nbi.10.7.230.201.nip.io
+          OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
           VIM_ID: ${{ env.VIM_ID }}
 
