@@ -58,15 +58,46 @@ jobs:
           #sudo apt-get update
           sudo apt-get install -y sshpass
 
+      - name: Retrieve OSM token
+        run: |
+          TOKEN=$(curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
+            -H "Content-Type: application/json" \
+            -d '{
+              "username": "'${OSM_USER}'",
+              "password": "'${OSM_PASSWORD}'",
+              "project_id": "'${OSM_PROJECT}'"
+            }' | jq -r '.id')
+          
+          echo "OSM_TOKEN=${TOKEN}" >> $GITHUB_ENV
+        env:
+          OSM_HOSTNAME: 10.7.230.201.nip.io
+          OSM_USER: ${{ secrets.OSM_USER }}
+          OSM_PASSWORD: ${{ secrets.OSM_PASSWORD }}
+          OSM_PROJECT: ${{ secrets.OSM_PROJECT }}
+
       - name: Create dummy vim
         run: |
           ssh -o PreferredAuthentications=publickey osm bash << EOF 
-          export OSM_HOSTNAME=nbi.10.7.230.201.nip.io
-          osm vim-create --name $CLUSTER_NAME \
-           --user u --password p \
-           --tenant p --account_type dummy \
-           --auth_url http://localhost/dummy \
+          VIM_ID=$(curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/vim_accounts \
+            -H "Authorization: Bearer ${OSM_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -d '{
+              "name": "'${VIM_NAME}'",
+              "vim_type": "dummy",
+              "vim_user": "u",
+              "vim_password": "p",
+              "vim_tenant_name": "p",
+              "vim_url": "http://localhost/dummy"
+            }' | jq -r '.id')
+          
+          echo "VIM_ID=${VIM_ID}" >> $GITHUB_ENV
+          EOF
         env:
+          OSM_HOSTNAME: 10.7.230.201.nip.io
+          OSM_USER: ${{ secrets.OSM_USER }}
+          OSM_PASSWORD: ${{ secrets.OSM_PASSWORD }}
+          OSM_PROJECT: ${{ secrets.OSM_PROJECT }}
           CLUSTER_NAME: ${{ inputs.cluster_name }}
         
       - name: Retrieve kubeconfig
@@ -78,29 +109,56 @@ jobs:
 
       - name: Register cluster
         run: |
-          scp ~/kubeconfig osm:~/kubeconfig.yaml
+          KUBECONFIG_CONTENT=$(cat ~/kubeconfig | jq -Rs .)
           ssh -o PreferredAuthentications=publickey osm bash << EOF 
-          export OSM_HOSTNAME=nbi.10.7.230.201.nip.io
-          osm k8scluster-add --creds ~/kubeconfig.yaml \
-           --version '1.26' \
-           --vim $CLUSTER_NAME \
-           --description "My K8s cluster" \
-           --k8s-nets '{"net1": "osm-ext"}' \
-           $CLUSTER_NAME
+          K8S_CLUSTER_ID=\$(curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
+            -H "Authorization: Bearer \${OSM_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -d '{
+              "name": "'${CLUSTER_NAME}'",
+              "k8s_version": "1.26",
+              "vim_account": "'${VIM_ID}'",
+              "description": "My K8s cluster",
+              "nets": {"net1": "osm-ext"},
+              "credentials": '"\${KUBECONFIG_CONTENT}"'
+            }' | jq -r '.id')
+          
+          echo "K8S_CLUSTER_ID=\${K8S_CLUSTER_ID}" >> \$GITHUB_ENV
           EOF
-          sleep 60 #wait cluster to be ready
+          sleep 60
         env:
           CLUSTER_NAME: ${{ inputs.cluster_name }}
+          OSM_HOSTNAME: nbi.10.7.230.201.nip.io
+          OSM_TOKEN: ${{ env.OSM_TOKEN }}
+          VIM_ID: ${{ env.VIM_ID }}
 
       - name: Write config from base64 input
         run: |
-          echo "${{ inputs.config_base64 }}" | base64 -d > config5gc.yaml
+          CONFIG_BASE64="${{ inputs.config_base64 }}"
+          echo "$CONFIG_BASE64" | base64 -d > config5gc.yaml
 
       - name: Deploy free5gc
         run: |
-          ssh -o PreferredAuthentications=publickey osm bash << EOF
-          export OSM_HOSTNAME=nbi.10.7.230.201.nip.io 
-          osm ns-create --ns_name free5gc --nsd_name free5gc_ns --vim_account $CLUSTER_NAME --config_file config5gc.yaml
+          CONFIG_JSON=$(python3 -c "import json, yaml, sys; print(json.dumps(yaml.safe_load(open('config5gc.yaml'))))")
+          ssh -o PreferredAuthentications=publickey osm bash << 'EOF'
+          cat > /tmp/ns_deploy.yaml << PAYLOAD
+          nsName: free5gc
+          nsdId: 473a08f2-becc-4dfa-bac4-74f95573f027
+          vimAccountId: ${VIM_ID}
+          PAYLOAD
+          cat config5gc.yaml >> /tmp/ns_deploy.yaml
+          NS_INSTANCE_ID=$(curl -k -X POST https://${OSM_HOSTNAME}/osm/nslcm/v1/ns_instances_content \
+          -H "Authorization: Bearer ${OSM_TOKEN}" \
+          -H "Content-Type: application/yaml" \
+          -H "Accept: application/json" \
+          --data-binary @/tmp/ns_deploy.yaml \
+          | jq -r '.id')
+          
+          echo "NS_INSTANCE_ID=${NS_INSTANCE_ID}" >> $GITHUB_ENV
+          echo "Deployed NS with ID: ${NS_INSTANCE_ID}"
           EOF
         env:
-          CLUSTER_NAME: ${{ inputs.cluster_name }}
+          OSM_HOSTNAME: nbi.10.7.230.201.nip.io
+          OSM_TOKEN: ${{ env.OSM_TOKEN }}
+          VIM_ID: ${{ env.VIM_ID }}
