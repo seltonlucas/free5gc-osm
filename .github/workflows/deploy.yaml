@@ -62,6 +62,7 @@ jobs:
         run: |
           TOKEN=$(ssh osm "curl -sk -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
             -H 'Content-Type: application/json' \
+            -H 'Accept: application/json' \
             -d '{
               "username": "${OSM_USER}",
               "password": "${OSM_PASSWORD}",
