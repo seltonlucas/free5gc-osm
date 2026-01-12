@@ -67,7 +67,7 @@ jobs:
               "username": "${OSM_USER}",
               "password": "${OSM_PASSWORD}",
               "project_id": "${OSM_PROJECT}"
-            }' | jq -r '.id'" 2>/dev/null)
+            }' | jq -r '.id'")
           
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
             echo "❌ Failed to retrieve OSM token"
