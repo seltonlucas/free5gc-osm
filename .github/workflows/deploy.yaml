@@ -224,7 +224,7 @@ jobs:
               -H 'Authorization: Bearer ${OSM_TOKEN}' \
               -H 'Content-Type: application/yaml' \
               -H 'Accept: application/json' \
-              --data-binary @~/ns_deploy.yaml | jq -r '.id'")
+              --data-binary @/tmp/ns_deploy.yaml | jq -r '.id'")
 
           echo "=== API Response ==="
           echo "$NS_INSTANCE_ID"
