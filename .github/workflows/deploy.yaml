@@ -150,17 +150,23 @@ jobs:
           
           print("✅ Payload created")
           PYTHON_EOF
+
+          echo "=== Local Payload Preview ==="
+          head -30 /tmp/k8s_payload.yaml
           
           # Transferir payload para OSM host
           scp /tmp/k8s_payload.yaml osm:/tmp/k8s_payload.yaml 2>/dev/null
+
+          echo "=== Remote Payload Preview ==="
+          ssh osm "head -30 /tmp/k8s_payload.yaml"
           
           K8S_RESPONSE=$(ssh -o PreferredAuthentications=publickey osm \
-          "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
+          "curl -k -v -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
           -H 'Authorization: Bearer ${OSM_TOKEN}' \
           -H 'Content-Type: application/yaml' \
           -H 'Accept: application/json' \
-          --data @/tmp/k8s_payload.yaml")
-
+          --data-binary @/tmp/k8s_payload.yaml")
+          
           echo "=== API Response ==="
           echo "$K8S_RESPONSE"
           
