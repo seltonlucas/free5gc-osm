@@ -151,27 +151,20 @@ jobs:
           print("✅ Payload created")
           PYTHON_EOF
           
-          echo "=== Local Payload Preview ==="
-          head -30 /tmp/k8s_payload.yaml
-          
+          # Transferir payload para OSM host
           scp /tmp/k8s_payload.yaml osm:/tmp/k8s_payload.yaml 2>/dev/null
           
-          # Ver o que está no host remoto
-          echo "=== Remote Payload Preview ==="
-          ssh osm "head -30 /tmp/k8s_payload.yaml"
-          
-          # Testar com curl verbose
-          echo "=== Curl Verbose Test ==="
-          ssh osm "curl -sk -v -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
-            -H 'Authorization: Bearer ${OSM_TOKEN}' \
-            -H 'Content-Type: application/yaml' \
-            -H 'Accept: application/json' \
-            --data-binary @/tmp/k8s_payload.yaml" 2>&1 | head -50
+          K8S_RESPONSE=$(ssh -o PreferredAuthentications=publickey osm \
+          "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
+          -H 'Authorization: Bearer ${OSM_TOKEN}' \
+          -H 'Content-Type: application/yaml' \
+          -H 'Accept: application/json' \
+          --data @/tmp/k8s_payload.yaml")
 
           echo "=== API Response ==="
           echo "$K8S_RESPONSE"
           
-          K8S_CLUSTER_ID=$(echo "$K8S_RESPONSE" | jq -r '.id' 2>/dev/null)
+          K8S_CLUSTER_ID=$(echo "$K8S_RESPONSE" | jq -r '.id' )
           
           if [ -z "$K8S_CLUSTER_ID" ] || [ "$K8S_CLUSTER_ID" = "null" ]; then
             echo "❌ Failed to register K8s cluster"
@@ -245,4 +238,3 @@ jobs:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
           VIM_ID: ${{ env.VIM_ID }}
-
