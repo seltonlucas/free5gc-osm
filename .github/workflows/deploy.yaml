@@ -150,18 +150,12 @@ jobs:
           
           print("✅ Payload created")
           PYTHON_EOF
-
-          echo "=== Local Payload Preview ==="
-          head -30 /tmp/k8s_payload.yaml
           
           # Transferir payload para OSM host
           scp /tmp/k8s_payload.yaml osm:/tmp/k8s_payload.yaml 2>/dev/null
-
-          echo "=== Remote Payload Preview ==="
-          ssh osm "head -30 /tmp/k8s_payload.yaml"
           
           K8S_RESPONSE=$(ssh -o PreferredAuthentications=publickey osm \
-          "curl -k -v -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
+          "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/k8sclusters \
           -H 'Authorization: Bearer ${OSM_TOKEN}' \
           -H 'Content-Type: application/yaml' \
           -H 'Accept: application/json' \
@@ -222,16 +216,18 @@ jobs:
           PYTHON_EOF
           
           # Transferir payload para OSM host
-          scp /tmp/ns_deploy.yaml osm:~/ns_deploy.yaml
+          scp /tmp/ns_deploy.yaml osm:/tmp/ns_deploy.yaml
           
           # Deploy NS
           NS_INSTANCE_ID=$(ssh -o PreferredAuthentications=publickey osm \
-            "curl -sk -X POST https://${OSM_HOSTNAME}/osm/nslcm/v1/ns_instances_content \
+            "curl -k -v -X POST https://${OSM_HOSTNAME}/osm/nslcm/v1/ns_instances_content \
               -H 'Authorization: Bearer ${OSM_TOKEN}' \
               -H 'Content-Type: application/yaml' \
               -H 'Accept: application/json' \
               --data-binary @~/ns_deploy.yaml | jq -r '.id'")
-          
+
+          echo "=== API Response ==="
+          echo "$NS_INSTANCE_ID"
           if [ -z "$NS_INSTANCE_ID" ] || [ "$NS_INSTANCE_ID" = "null" ]; then
             echo "❌ Failed to deploy NS"
             echo "$NS_RESPONSE"
