@@ -314,8 +314,8 @@ jobs:
             CURRENT=$(date +%s)
             ELAPSED=$((CURRENT - MONITOR_START))
             
-            STATUS=$(ssh osm "export OSM_HOSTNAME=${{ secrets.OSM_HOSTNAME }} && \
-                              osm ns-show $NS_ID --literal | grep -i operational-status | awk '{print $NF}'")
+            STATUS=$(ssh osm "export OSM_HOSTNAME=${OSM_HOSTNAME} && \
+                              osm ns-show $NS_ID --literal | grep -i operational-status | awk '{print $2}'")
             
             echo "[${ELAPSED}s] Status: $STATUS"
             
