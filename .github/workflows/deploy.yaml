@@ -292,18 +292,10 @@ jobs:
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
           VIM_ID: ${{ env.VIM_ID }}
 
-      # ============================================
-      # PASSO 6: MONITORAR INSTANCIAÇÃO
-      # ============================================
       - name: ⏱️ Monitor NS Deployment
         id: ns-monitor
         run: |
           START=$(date +%s)
-          
-          # Obter NS ID
-          NS_ID="free5gc"
-          
-          echo "NS ID: $NS_ID"
           
           # Monitorar até completar (max 15 min)
           MAX_WAIT=900
@@ -314,8 +306,12 @@ jobs:
             CURRENT=$(date +%s)
             ELAPSED=$((CURRENT - MONITOR_START))
             
-            STATUS=$(ssh osm "export OSM_HOSTNAME=${OSM_HOSTNAME} && \
-                              osm ns-show $NS_ID --literal | grep -i operational-status | awk '{print $2}'")
+            STATUS=$(ssh -o PreferredAuthentications=publickey osm bash << EOF 
+                            export OSM_HOSTNAME=${OSM_HOSTNAME}
+                            osm ns-show free5gc --literal | grep -i operational-status | awk '{print $2}'
+                            EOF
+                            ")
+                            
             
             echo "[${ELAPSED}s] Status: $STATUS"
             
