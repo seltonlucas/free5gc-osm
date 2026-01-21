@@ -333,7 +333,7 @@ jobs:
           echo \"ns_monitor_duration=${DURATION}\" >> $GITHUB_OUTPUT
           echo \"⏱️  NS Monitoring: ${DURATION}s\"
         env:
-          OSM_HOSTNAME: ${{ secrets.OSM_HOSTNAME }}
+          OSM_HOSTNAME: 10.7.230.201.nip.io
           NS_INSTANCE_ID: ${{ env.NS_INSTANCE_ID }}
       
       # ============================================
