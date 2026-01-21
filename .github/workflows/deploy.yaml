@@ -112,6 +112,7 @@ jobs:
           OSM_PROJECT: ${{ secrets.OSM_PROJECT }}
 
       - name: Create dummy vim
+        id: vim-register
         run: |
           START=$(date +%s)
           VIM_RESPONSE=$(ssh -o PreferredAuthentications=publickey osm \
@@ -148,6 +149,7 @@ jobs:
           VIM_NAME: ${{ inputs.cluster_name }}
           
       - name: Retrieve kubeconfig
+        id: kubeconfig
         run: |
           START=$(date +%s)
           sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
@@ -162,6 +164,7 @@ jobs:
           echo "⏱️  Kubeconfig generation: ${DURATION}s"
 
       - name: Register cluster
+        id: k8s-register
         run: |
           START=$(date +%s)
           python3 << 'PYTHON_EOF'
@@ -225,6 +228,7 @@ jobs:
           VIM_ID: ${{ env.VIM_ID }}
 
       - name: Write config from base64 input
+        id: config-prep
         run: |
           START=$(date +%s)
           echo "${{ inputs.config_base64 }}" | base64 -d > config5gc.yaml
@@ -235,6 +239,7 @@ jobs:
           echo "⏱️  Config preparation: ${DURATION}s"
 
       - name: Deploy free5gc
+        id: ns-deploy
         run: |
           START=$(date +%s)
           python3 << 'PYTHON_EOF'
