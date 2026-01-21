@@ -301,8 +301,7 @@ jobs:
           START=$(date +%s)
           
           # Obter NS ID
-          NS_ID=$(ssh osm "export OSM_HOSTNAME=${{ secrets.OSM_HOSTNAME }} && \
-                           osm ns-list | grep free5gc | awk '{print $4}'")
+          NS_ID="free5gc"
           
           echo "NS ID: $NS_ID"
           
