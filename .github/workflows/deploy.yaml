@@ -310,14 +310,12 @@ jobs:
           while true; do
             CURRENT=$(date +%s)
             ELAPSED=$((CURRENT - MONITOR_START))
-            
+
             RAW_STATUS=$(ssh osm "export OSM_HOSTNAME=${OSM_HOSTNAME} && \
               osm ns-show ${NS_INSTANCE_ID} --literal | grep -i operational-status | awk '{print \$NF}' | xargs")
 
 
             STATUS_WORD=$(echo "${RAW_STATUS}" | awk '{print $2}')
-
-            echo "[${ELAPSED}s] Status raw: '${RAW_STATUS}' | parsed: '${STATUS_WORD}'"
 
             if [[ "${STATUS_WORD}" == "running" ]] || [[ "${STATUS_WORD}" == "READY" ]]; then
               echo "✓ NS is READY"
@@ -349,7 +347,8 @@ jobs:
       - name: Validate deployment
         run: |
           echo "Checking free5GC pods..."
-          ssh osm "sudo microk8s kubectl get pods -n free5gc"
+          ssh cluster \
+          'sudo microk8s.kubectl get pods -n free5gc'
       
       # ============================================
       # RESUMO FINAL
