@@ -302,7 +302,7 @@ jobs:
           
           # Obter NS ID
           NS_ID=$(ssh osm "export OSM_HOSTNAME=${{ secrets.OSM_HOSTNAME }} && \
-                           osm ns-list | grep free5gc-${{ inputs.cluster_name }} | awk '{print \$1}'")
+                           osm ns-list | grep free5gc | awk '{print \$4}'")
           
           echo "NS ID: $NS_ID"
           
