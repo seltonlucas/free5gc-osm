@@ -17,8 +17,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      # ============================================
+      # INÍCIO - Capturar timestamp inicial
+      # ============================================
+      - name: 📊 Start Timer
+        id: start-timer
+        run: |
+          echo "start_time=$(date +%s)" >> $GITHUB_OUTPUT
+          echo "🕐 Workflow started at: $(date '+%Y-%m-%d %H:%M:%S')"
+      
+      # ============================================
+      # SETUP
+      # ============================================
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: 📊 Checkpoint - Checkout
+        run: |
+          START_TIME=${{ steps.start-timer.outputs.start_time }}
+          NOW=$(date +%s)
+          ELAPSED=$((NOW - START_TIME))
+          echo "✓ Checkout completed in ${ELAPSED}s"
+
       - name: Configure SSH
         run: |
+          START=$(date +%s)
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/proxy.key
           chmod 600 ~/.ssh/proxy.key
@@ -43,6 +66,8 @@ jobs:
             StrictHostKeyChecking no
             ProxyJump proxy
           END
+          END=$(date +%s)
+          echo "⏱️  SSH config: $((END - START))s"
         env:
           SSH_USER: ${{ secrets.PROXY_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_PROXY_KEY }}
@@ -60,6 +85,7 @@ jobs:
 
       - name: Retrieve OSM token
         run: |
+          START=$(date +%s)
           TOKEN=$(ssh -o PreferredAuthentications=publickey osm \
           "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/tokens \
             -H 'Content-Type: application/json' \
@@ -78,6 +104,7 @@ jobs:
           
           echo "OSM_TOKEN=${TOKEN}" >> $GITHUB_ENV
           echo "✅ Token retrieved successfully"
+          END=$(date +%s)
         env:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_USER: ${{ secrets.OSM_USER }}
@@ -86,6 +113,7 @@ jobs:
 
       - name: Create dummy vim
         run: |
+          START=$(date +%s)
           VIM_RESPONSE=$(ssh -o PreferredAuthentications=publickey osm \
             "curl -k -X POST https://${OSM_HOSTNAME}/osm/admin/v1/vim_accounts \
               -H 'Authorization: Bearer ${OSM_TOKEN}' \
@@ -110,6 +138,10 @@ jobs:
           
           echo "VIM_ID=${VIM_ID}" >> $GITHUB_ENV
           echo "✅ VIM created with ID: ${VIM_ID}"
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "vim_duration=${DURATION}" >> $GITHUB_OUTPUT
+          echo "⏱️  VIM Registration: ${DURATION}s"
         env:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
@@ -117,15 +149,21 @@ jobs:
           
       - name: Retrieve kubeconfig
         run: |
+          START=$(date +%s)
           sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
           ssh cluster \
           'sudo microk8s config' > ~/kubeconfig
           sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/kubeconfig
 
           echo "✅ Kubeconfig retrieved"
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "kubeconfig_duration=${DURATION}" >> $GITHUB_OUTPUT
+          echo "⏱️  Kubeconfig generation: ${DURATION}s"
 
       - name: Register cluster
         run: |
+          START=$(date +%s)
           python3 << 'PYTHON_EOF'
           import yaml
           import os
@@ -175,7 +213,10 @@ jobs:
           
           echo "K8S_CLUSTER_ID=${K8S_CLUSTER_ID}" >> $GITHUB_ENV
           echo "✅ K8s cluster registered with ID: ${K8S_CLUSTER_ID}"
-          echo "⏳ Waiting 60s for cluster to be ready..."
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "k8s_duration=${DURATION}" >> $GITHUB_OUTPUT
+          echo "⏱️  K8s Cluster Registration: ${DURATION}s"
           sleep 60
         env:
           CLUSTER_NAME: ${{ inputs.cluster_name }}
@@ -185,11 +226,17 @@ jobs:
 
       - name: Write config from base64 input
         run: |
+          START=$(date +%s)
           echo "${{ inputs.config_base64 }}" | base64 -d > config5gc.yaml
           echo "✅ Config file decoded"
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "config_duration=${DURATION}" >> $GITHUB_OUTPUT
+          echo "⏱️  Config preparation: ${DURATION}s"
 
       - name: Deploy free5gc
         run: |
+          START=$(date +%s)
           python3 << 'PYTHON_EOF'
           import yaml
           import os
@@ -236,7 +283,116 @@ jobs:
           
           echo "NS_INSTANCE_ID=${NS_INSTANCE_ID}" >> $GITHUB_ENV
           echo "✅ NS deployed successfully with ID: ${NS_INSTANCE_ID}"
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "ns_create_duration=${DURATION}" >> $GITHUB_OUTPUT
+          echo "⏱️  NS Creation: ${DURATION}s"
         env:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
           VIM_ID: ${{ env.VIM_ID }}
+
+      # ============================================
+      # PASSO 6: MONITORAR INSTANCIAÇÃO
+      # ============================================
+      - name: ⏱️ Monitor NS Deployment
+        id: ns-monitor
+        run: |
+          START=$(date +%s)
+          
+          # Obter NS ID
+          NS_ID=$(ssh osm "export OSM_HOSTNAME=${{ secrets.OSM_HOSTNAME }} && \
+                           osm ns-list | grep free5gc-${{ inputs.cluster_name }} | awk '{print \$1}'")
+          
+          echo "NS ID: $NS_ID"
+          
+          # Monitorar até completar (max 15 min)
+          MAX_WAIT=900
+          POLL_INTERVAL=10
+          MONITOR_START=$(date +%s)
+          
+          while true; do
+            CURRENT=$(date +%s)
+            ELAPSED=$((CURRENT - MONITOR_START))
+            
+            STATUS=$(ssh osm "export OSM_HOSTNAME=${{ secrets.OSM_HOSTNAME }} && \
+                              osm ns-show $NS_ID --literal | grep -i operational-status | awk '{print \$NF}'")
+            
+            echo "[${ELAPSED}s] Status: $STATUS"
+            
+            if [ "$STATUS" = "running" ] || [ "$STATUS" = "READY" ]; then
+              echo "✓ NS is READY"
+              break
+            fi
+            
+            if [ $ELAPSED -gt $MAX_WAIT ]; then
+              echo "⚠️  Timeout after 15 minutes"
+              break
+            fi
+            
+            sleep $POLL_INTERVAL
+          done
+          
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "ns_monitor_duration=${DURATION}" >> $GITHUB_OUTPUT
+          echo "⏱️  NS Monitoring: ${DURATION}s"
+        env:
+          OSM_HOSTNAME: ${{ secrets.OSM_HOSTNAME }}
+      
+      # ============================================
+      # VALIDAÇÃO
+      # ============================================
+      - name: Validate deployment
+        run: |
+          echo "Checking free5GC pods..."
+          ssh osm "sudo microk8s kubectl get pods -n free5gc"
+      
+      # ============================================
+      # RESUMO FINAL
+      # ============================================
+      - name: 📊 Performance Summary
+        if: always()
+        run: |
+          START_TIME=${{ steps.start-timer.outputs.start_time }}
+          END_TIME=$(date +%s)
+          TOTAL_DURATION=$((END_TIME - START_TIME))
+          
+          echo "========================================"
+          echo "   OSM PIPELINE PERFORMANCE REPORT"
+          echo "========================================"
+          echo ""
+          echo "VIM Registration:    ${{ steps.vim-register.outputs.vim_duration }}s"
+          echo "Kubeconfig Gen:      ${{ steps.kubeconfig.outputs.kubeconfig_duration }}s"
+          echo "K8s Registration:    ${{ steps.k8s-register.outputs.k8s_duration }}s"
+          echo "Config Preparation:  ${{ steps.config-prep.outputs.config_duration }}s"
+          echo "NS Creation:         ${{ steps.ns-deploy.outputs.ns_create_duration }}s"
+          echo "NS Monitoring:       ${{ steps.ns-monitor.outputs.ns_monitor_duration }}s"
+          echo ""
+          echo "TOTAL PIPELINE:      ${TOTAL_DURATION}s (~$((TOTAL_DURATION / 60))m)"
+          echo "========================================"
+          
+          # Salvar em artifact
+          cat > performance_report_osm.txt <<EOF
+          OSM Pipeline Performance Report
+          Execution Date: $(date '+%Y-%m-%d %H:%M:%S')
+          Cluster: ${{ inputs.cluster_name }}
+          Cluster IP: ${{ inputs.cluster_ip }}
+          
+          Timings:
+          - VIM Registration:    ${{ steps.vim-register.outputs.vim_duration }}s
+          - Kubeconfig Gen:      ${{ steps.kubeconfig.outputs.kubeconfig_duration }}s
+          - K8s Registration:    ${{ steps.k8s-register.outputs.k8s_duration }}s
+          - Config Preparation:  ${{ steps.config-prep.outputs.config_duration }}s
+          - NS Creation:         ${{ steps.ns-deploy.outputs.ns_create_duration }}s
+          - NS Monitoring:       ${{ steps.ns-monitor.outputs.ns_monitor_duration }}s
+          
+          Total: ${TOTAL_DURATION}s (~$((TOTAL_DURATION / 60))m)
+          EOF
+      
+      - name: Upload Performance Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report-osm
+          path: performance_report_osm.txt
