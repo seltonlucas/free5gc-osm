@@ -295,45 +295,46 @@ jobs:
       - name: ⏱️ Monitor NS Deployment
         id: ns-monitor
         run: |
+          set -e
+
+          echo "OSM_HOSTNAME=${OSM_HOSTNAME}"
+          echo "NS_INSTANCE_ID=${NS_INSTANCE_ID}"
+
           START=$(date +%s)
-          
-          # Monitorar até completar (max 15 min)
-          MAX_WAIT=900
+
+          MAX_WAIT=900        # 15 minutos
           POLL_INTERVAL=10
           MONITOR_START=$(date +%s)
-          
+
           while true; do
             CURRENT=$(date +%s)
             ELAPSED=$((CURRENT - MONITOR_START))
-            
-            STATUS=$(ssh -o PreferredAuthentications=publickey osm bash << EOF 
-                            export OSM_HOSTNAME=${OSM_HOSTNAME}
-                            osm ns-show free5gc --literal | grep -i operational-status | awk '{print $2}'
-                            EOF
-                            ")
-                            
-            
-            echo "[${ELAPSED}s] Status: $STATUS"
-            
-            if [ "$STATUS" = "running" ] || [ "$STATUS" = "READY" ]; then
-              echo "✓ NS is READY"
+
+            STATUS=$(ssh osm "export OSM_HOSTNAME=${OSM_HOSTNAME} && \
+                              osm ns-show ${NS_INSTANCE_ID} --literal | grep -i operational-status | awk '{print \$NF}'")
+
+            echo \"[${ELAPSED}s] Status: ${STATUS}\"
+
+            if [ \"${STATUS}\" = \"running\" ] || [ \"${STATUS}\" = \"READY\" ]; then
+              echo \"✓ NS is READY\"
               break
             fi
-            
-            if [ $ELAPSED -gt $MAX_WAIT ]; then
-              echo "⚠️  Timeout after 15 minutes"
+
+            if [ ${ELAPSED} -gt ${MAX_WAIT} ]; then
+              echo \"⚠️  Timeout after 15 minutes\"
               break
             fi
-            
-            sleep $POLL_INTERVAL
+
+            sleep ${POLL_INTERVAL}
           done
-          
+
           END=$(date +%s)
           DURATION=$((END - START))
-          echo "ns_monitor_duration=${DURATION}" >> $GITHUB_OUTPUT
-          echo "⏱️  NS Monitoring: ${DURATION}s"
+          echo \"ns_monitor_duration=${DURATION}\" >> $GITHUB_OUTPUT
+          echo \"⏱️  NS Monitoring: ${DURATION}s\"
         env:
           OSM_HOSTNAME: ${{ secrets.OSM_HOSTNAME }}
+          NS_INSTANCE_ID: ${{ env.NS_INSTANCE_ID }}
       
       # ============================================
       # VALIDAÇÃO
