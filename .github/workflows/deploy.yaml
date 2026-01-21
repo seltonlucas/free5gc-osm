@@ -349,7 +349,7 @@ jobs:
           echo "Checking free5GC pods..."
           sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
           ssh cluster \
-          'sudo microk8s.kubectl get pods -A --field-selector=status.phase=Running -o jsonpath='{.items[*].metadata.name}{"\n"}''
+          'sudo microk8s.kubectl get pods -A --field-selector=status.phase=Running -o name | sed "s/^pod\///"'
       
       # ============================================
       # RESUMO FINAL
