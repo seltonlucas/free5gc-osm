@@ -310,15 +310,16 @@ jobs:
           while true; do
             CURRENT=$(date +%s)
             ELAPSED=$((CURRENT - MONITOR_START))
+            
+            RAW_STATUS=$(ssh osm "export OSM_HOSTNAME=${OSM_HOSTNAME} && \
+              osm ns-show ${NS_INSTANCE_ID} --literal | grep -i operational-status | awk '{print \$NF}' | xargs")
 
-            # Capturar status e limpar espaços
-            STATUS=$(ssh osm "export OSM_HOSTNAME=${OSM_HOSTNAME} && \
-                              osm ns-show ${NS_INSTANCE_ID} --literal | grep -i operational-status | awk '{print \$NF}' | xargs")
 
-            echo "[${ELAPSED}s] Status: '${STATUS}'"
+            STATUS_WORD=$(echo "${RAW_STATUS}" | awk '{print $2}')
 
-            # Comparação segura
-            if [[ "${STATUS}" == "running" ]] || [[ "${STATUS}" == "READY" ]]; then
+            echo "[${ELAPSED}s] Status raw: '${RAW_STATUS}' | parsed: '${STATUS_WORD}'"
+
+            if [[ "${STATUS_WORD}" == "running" ]] || [[ "${STATUS_WORD}" == "READY" ]]; then
               echo "✓ NS is READY"
               READY=true
               break
@@ -329,15 +330,15 @@ jobs:
               break
             fi
 
-            sleep ${POLL_INTERVAL}
+            sleep "${POLL_INTERVAL}"
           done
 
           END=$(date +%s)
           DURATION=$((END - START))
-          
-          echo "ns_monitor_duration=${DURATION}" >> $GITHUB_OUTPUT
+
+          echo "ns_monitor_duration=${DURATION}" >> "$GITHUB_OUTPUT"
           echo "⏱️ NS Monitoring: ${DURATION}s"
-          echo "ready_status=${READY}" >> $GITHUB_OUTPUT
+          echo "ready_status=${READY}" >> "$GITHUB_OUTPUT"
         env:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           NS_INSTANCE_ID: ${{ env.NS_INSTANCE_ID }}
