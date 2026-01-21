@@ -302,7 +302,7 @@ jobs:
           
           # Obter NS ID
           NS_ID=$(ssh osm "export OSM_HOSTNAME=${{ secrets.OSM_HOSTNAME }} && \
-                           osm ns-list | grep free5gc | awk '{print \$4}'")
+                           osm ns-list | grep free5gc | awk '{print $4}'")
           
           echo "NS ID: $NS_ID"
           
@@ -316,7 +316,7 @@ jobs:
             ELAPSED=$((CURRENT - MONITOR_START))
             
             STATUS=$(ssh osm "export OSM_HOSTNAME=${{ secrets.OSM_HOSTNAME }} && \
-                              osm ns-show $NS_ID --literal | grep -i operational-status | awk '{print \$NF}'")
+                              osm ns-show $NS_ID --literal | grep -i operational-status | awk '{print $NF}'")
             
             echo "[${ELAPSED}s] Status: $STATUS"
             
