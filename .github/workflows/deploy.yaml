@@ -11,6 +11,9 @@ on:
       config_base64:
         required: true
         type: string
+      vim_id:
+        required: true
+        type: string
 
 jobs:
   ondemand-test:
@@ -180,7 +183,7 @@ jobs:
         env:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
-          VIM_ID: ${{ env.VIM_ID }}
+          VIM_ID: ${{ inputs.vim_id }}
 
       - name: ⏱️ Monitor NS Deployment
         id: ns-monitor
