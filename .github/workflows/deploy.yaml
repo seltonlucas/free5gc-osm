@@ -2,9 +2,6 @@ name: Deploy functions
 on:
   workflow_dispatch:
     inputs:
-      cluster_ip:
-        required: true
-        type: string
       cluster_name:
         required: true
         type: string
@@ -63,11 +60,6 @@ jobs:
             IdentityFile ~/.ssh/osm.key
             StrictHostKeyChecking no
             ProxyJump proxy
-          Host cluster
-            HostName $CLUSTER_HOST
-            User packer
-            StrictHostKeyChecking no
-            ProxyJump proxy
           END
           END=$(date +%s)
           echo "⏱️  SSH config: $((END - START))s"
@@ -80,7 +72,6 @@ jobs:
           OSM_HOST: ${{ secrets.HOST }}
           OSM_KEY: ${{ secrets.KEY }}
           OSM_PORT: ${{ secrets.HOST }}
-          CLUSTER_HOST: ${{ inputs.cluster_ip }}
 
       - name: Install sshpass
         run: |
