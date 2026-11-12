@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+metrics/
+odim-context.json
+odim.tfvars.json
+config5gc.yaml
+k8s.json
+tfplan
+id_rsa
+known_hosts

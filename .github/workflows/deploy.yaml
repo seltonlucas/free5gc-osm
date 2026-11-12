@@ -1,4 +1,5 @@
 name: Deploy functions
+run-name: ODIM-${{ inputs.experiment_id || github.event.client_payload.experiment_id || format('odim-{0}', github.run_id) }}
 on:
   workflow_dispatch:
     inputs:
@@ -11,11 +12,36 @@ on:
       config_base64:
         required: true
         type: string
+      experiment_id:
+        required: false
+        type: string
+      minimum_ready_nodes:
+        required: false
+        type: number
+        default: 1
+      readiness_timeout_s:
+        required: false
+        type: number
+        default: 900
+      cluster_user:
+        required: false
+        type: string
+        default: packer
+      upstream_run_id:
+        required: false
+        type: string
+      upstream_run_attempt:
+        required: false
+        type: string
+  repository_dispatch:
+    types: [ondemand]
+permissions:
+  contents: read
 
 jobs:
   ondemand-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 65
     steps:
       # ============================================
       # INÍCIO - Capturar timestamp inicial
@@ -32,6 +58,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Validate and normalize event
+        run: python3 -m scripts.odim_ci --context "$RUNNER_TEMP/odim-context.json" context p2
+
       - name: 📊 Checkpoint - Checkout
         run: |
           START_TIME=${{ steps.start-timer.outputs.start_time }}
@@ -62,10 +91,15 @@ jobs:
             ProxyJump proxy
           Host cluster
             HostName $CLUSTER_HOST
-            User packer
+            User $CLUSTER_USER
             StrictHostKeyChecking no
             ProxyJump proxy
           END
+          if [ -n "$CLUSTER_SSH_KEY" ]; then
+            printf "%s\n" "$CLUSTER_SSH_KEY" > ~/.ssh/cluster.key
+            chmod 600 ~/.ssh/cluster.key
+            echo "ODIM_SSH_IDENTITY=$HOME/.ssh/cluster.key" >> "$GITHUB_ENV"
+          fi
           END=$(date +%s)
           echo "⏱️  SSH config: $((END - START))s"
         env:
@@ -77,11 +111,21 @@ jobs:
           OSM_HOST: ${{ secrets.HOST }}
           OSM_KEY: ${{ secrets.KEY }}
           OSM_PORT: ${{ secrets.HOST }}
-          CLUSTER_HOST: ${{ inputs.cluster_ip }}
+          CLUSTER_HOST: ${{ env.ODIM_CLUSTER_IP }}
+          CLUSTER_USER: ${{ env.ODIM_CLUSTER_USER }}
+          CLUSTER_SSH_KEY: ${{ secrets.CLUSTER_SSH_KEY }}
 
       - name: Install sshpass
         run: |
           sudo apt-get install -y sshpass
+
+      - name: Wait for Kubernetes readiness before OSM mutations
+        id: cluster-ready
+        env:
+          SSHPASS: ${{ secrets.CLUSTER_PASSWORD }}
+        run: >-
+          python3 -m scripts.odim_ci --context "$RUNNER_TEMP/odim-context.json"
+          gate --report metrics/cluster-readiness.json
 
       - name: Retrieve OSM token
         run: |
@@ -102,6 +146,7 @@ jobs:
             exit 1
           fi
           
+          echo "::add-mask::$TOKEN"
           echo "OSM_TOKEN=${TOKEN}" >> $GITHUB_ENV
           echo "✅ Token retrieved successfully"
           END=$(date +%s)
@@ -146,22 +191,17 @@ jobs:
         env:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
-          VIM_NAME: ${{ inputs.cluster_name }}
+          VIM_NAME: ${{ env.ODIM_CLUSTER_NAME }}
           
       - name: Retrieve kubeconfig
         id: kubeconfig
+        env:
+          SSHPASS: ${{ secrets.CLUSTER_PASSWORD }}
         run: |
           START=$(date +%s)
-          sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
-          ssh cluster \
-          'sudo microk8s config' > ~/kubeconfig
-          sed -i "s/127.0.0.1/${{ inputs.cluster_ip }}/g" ~/kubeconfig
-
-          echo "✅ Kubeconfig retrieved"
+          python3 -m scripts.odim_ci --context "$RUNNER_TEMP/odim-context.json" kubeconfig --output "$HOME/kubeconfig"
           END=$(date +%s)
-          DURATION=$((END - START))
-          echo "kubeconfig_duration=${DURATION}" >> $GITHUB_OUTPUT
-          echo "⏱️  Kubeconfig generation: ${DURATION}s"
+          echo "kubeconfig_duration=$((END - START))" >> "$GITHUB_OUTPUT"
 
       - name: Register cluster
         id: k8s-register
@@ -222,7 +262,7 @@ jobs:
           echo "⏱️  K8s Cluster Registration: ${DURATION}s"
           sleep 60
         env:
-          CLUSTER_NAME: ${{ inputs.cluster_name }}
+          CLUSTER_NAME: ${{ env.ODIM_CLUSTER_NAME }}
           OSM_HOSTNAME: 10.7.230.201.nip.io
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
           VIM_ID: ${{ env.VIM_ID }}
@@ -231,12 +271,9 @@ jobs:
         id: config-prep
         run: |
           START=$(date +%s)
-          echo "${{ inputs.config_base64 }}" | base64 -d > config5gc.yaml
-          echo "✅ Config file decoded"
+          python3 -m scripts.odim_ci --context "$RUNNER_TEMP/odim-context.json" config --output config5gc.yaml
           END=$(date +%s)
-          DURATION=$((END - START))
-          echo "config_duration=${DURATION}" >> $GITHUB_OUTPUT
-          echo "⏱️  Config preparation: ${DURATION}s"
+          echo "config_duration=$((END - START))" >> "$GITHUB_OUTPUT"
 
       - name: Deploy free5gc
         id: ns-deploy
@@ -272,7 +309,7 @@ jobs:
           
           # Deploy NS
           NS_INSTANCE_ID=$(ssh -o PreferredAuthentications=publickey osm \
-            "curl -k -v -X POST https://${OSM_HOSTNAME}/osm/nslcm/v1/ns_instances_content \
+            "curl -k -X POST https://${OSM_HOSTNAME}/osm/nslcm/v1/ns_instances_content \
               -H 'Authorization: Bearer ${OSM_TOKEN}' \
               -H 'Content-Type: application/yaml' \
               -H 'Accept: application/json' \
@@ -297,68 +334,43 @@ jobs:
           OSM_TOKEN: ${{ env.OSM_TOKEN }}
           VIM_ID: ${{ env.VIM_ID }}
 
-      - name: ⏱️ Monitor NS Deployment
+      - name: Monitor NS readiness with structured OSM state
         id: ns-monitor
-        run: |
-          set -e
-
-          echo "OSM_HOSTNAME=${OSM_HOSTNAME}"
-          echo "NS_INSTANCE_ID=${NS_INSTANCE_ID}"
-
-          START=$(date +%s)
-
-          MAX_WAIT=900
-          POLL_INTERVAL=10
-          MONITOR_START=$(date +%s)
-          READY=false
-
-          while true; do
-            CURRENT=$(date +%s)
-            ELAPSED=$((CURRENT - MONITOR_START))
-
-            RAW_STATUS=$(ssh osm "export OSM_HOSTNAME=${OSM_HOSTNAME} && \
-              osm ns-show ${NS_INSTANCE_ID} --literal | grep -i operational-status | awk '{print \$NF}' | xargs")
-
-
-            STATUS_WORD=$(echo "${RAW_STATUS}" | awk '{print $2}')
-
-            if [[ "${STATUS_WORD}" == "running" ]] || [[ "${STATUS_WORD}" == "READY" ]]; then
-              echo "✓ NS is READY"
-              READY=true
-              break
-            fi
-
-            if (( ELAPSED > MAX_WAIT )); then
-              echo "⚠️ Timeout after 15 minutes"
-              break
-            fi
-
-            sleep "${POLL_INTERVAL}"
-          done
-
-          END=$(date +%s)
-          DURATION=$((END - START))
-
-          echo "ns_monitor_duration=${DURATION}" >> "$GITHUB_OUTPUT"
-          echo "⏱️ NS Monitoring: ${DURATION}s"
-          echo "ready_status=${READY}" >> "$GITHUB_OUTPUT"
+        run: >-
+          python3 -m scripts.odim_ns --context "$RUNNER_TEMP/odim-context.json"
+          --id "$NS_INSTANCE_ID" --hostname "$OSM_HOSTNAME"
+          --report metrics/ns-readiness.json
         env:
           OSM_HOSTNAME: 10.7.230.201.nip.io
           NS_INSTANCE_ID: ${{ env.NS_INSTANCE_ID }}
-      
+          OSM_TOKEN: ${{ env.OSM_TOKEN }}
+          OSM_CA_FILE: ${{ vars.OSM_CA_FILE }}
+
       # ============================================
       # VALIDAÇÃO
       # ============================================
-      - name: Validate deployment
+      - name: Inspect deployment pods (not a functional 5G probe)
+        env:
+          SSHPASS: ${{ secrets.CLUSTER_PASSWORD }}
         run: |
-          echo "Checking free5GC pods..."
-          sshpass -p "${{ secrets.CLUSTER_PASSWORD }}" \
-          ssh cluster \
-          'sudo microk8s.kubectl get pods -A --field-selector=status.phase=Running -o name | sed "s/^pod\///"'
-      
+          if [[ -n "${ODIM_SSH_IDENTITY:-}" ]]; then
+            SSH=(ssh -o BatchMode=yes -o ConnectTimeout=10 -i "$ODIM_SSH_IDENTITY" cluster)
+          else
+            SSH=(sshpass -e ssh -o ConnectTimeout=10 -o NumberOfPasswordPrompts=1 cluster)
+          fi
+          "${SSH[@]}" "sudo -n microk8s.kubectl --request-timeout=10s get pods -A"
+
       # ============================================
       # RESUMO FINAL
       # ============================================
+      - name: Upload cluster readiness evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readiness-${{ github.run_id }}-${{ github.run_attempt }}
+          path: metrics/*.json
+          if-no-files-found: warn
+
       - name: 📊 Performance Summary
         if: always()
         run: |
@@ -384,8 +396,8 @@ jobs:
           cat > performance_report_osm.txt <<EOF
           OSM Pipeline Performance Report
           Execution Date: $(date '+%Y-%m-%d %H:%M:%S')
-          Cluster: ${{ inputs.cluster_name }}
-          Cluster IP: ${{ inputs.cluster_ip }}
+          Cluster: ${ODIM_CLUSTER_NAME}
+          Cluster IP: ${ODIM_CLUSTER_IP}
           
           Timings:
           - VIM Registration:    ${{ steps.vim-register.outputs.vim_duration }}s
